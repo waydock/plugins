@@ -31,10 +31,17 @@ class TestMarkdownStructure:
         # Not just SKILL.md. The README is the most-read file here and is the
         # one Cursor's reviewer opens first, and it was the only file with a
         # stated no-em-dash rule and no test enforcing it.
+        # Shipped prose only. An unfiltered rglob also picked up .pytest_cache/
+        # and .context/, the scratch directory the agent harness drops user
+        # attachments into: four of the six files it scanned were gitignored.
+        # It passed by luck. One attached note containing the character would
+        # have turned this red locally while CI, which checks out a clean tree,
+        # stayed green.
         offenders = [
             path
             for path in sorted(PLUGIN_ROOT.rglob("*.md"))
-            if ".venv" not in path.parts and EM_DASH in path.read_text()
+            if not any(part.startswith(".") for part in path.relative_to(PLUGIN_ROOT).parts)
+            and EM_DASH in path.read_text()
         ]
         assert not offenders, (
             "em-dashes found in: "

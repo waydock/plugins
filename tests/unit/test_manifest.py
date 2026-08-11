@@ -58,6 +58,38 @@ class TestPluginManifests:
         assert not logo.startswith(("/", "..")), f"logo path '{logo}' must be relative"
         assert (PLUGIN_ROOT / logo).exists(), f"logo path '{logo}' does not exist"
 
+    def test_every_cursor_manifest_path_resolves_inside_the_plugin(self):
+        # The rule this asserts, and how we know it: Cursor resolves these
+        # values against the PLUGIN ROOT, not against .cursor-plugin/. Verified
+        # against two shipped plugins, whose values only make sense that way:
+        # cloudflare's "logo": "logo.svg" and vercel's "logo":
+        # "assets/vercel.svg", "skills": "skills", "agents": "agents" all sit
+        # beside .cursor-plugin/, never inside it.
+        #
+        # Why it is not enough to check the logo alone: this manifest shipped
+        # "mcpServers": "../mcp.json", which is only correct under the OTHER
+        # rule (base = .cursor-plugin/). Under the real rule it resolves to the
+        # PARENT of the repo, so Cursor would find no MCP server and every
+        # install would come up with skills but no tools. Nothing caught it,
+        # because the logo test resolved one key against the right base while
+        # three keys in the same file disagreed about what the base was. So
+        # check every path key, and check it the way the harness will.
+        manifest = _load(CURSOR_MANIFEST)
+        root = PLUGIN_ROOT.resolve()
+        for key in ("logo", "skills", "mcpServers", "agents", "commands"):
+            value = manifest.get(key)
+            if value is None:
+                continue
+            resolved = (PLUGIN_ROOT / value).resolve()
+            assert resolved.is_relative_to(root), (
+                f"'{key}': '{value}' resolves to {resolved}, outside the plugin. "
+                f"Cursor resolves manifest paths from the plugin root, so a "
+                f"leading '..' escapes the shipped tree."
+            )
+            assert resolved.exists(), (
+                f"'{key}': '{value}' resolves to {resolved}, which does not exist"
+            )
+
 
 class TestMcpConfigs:
     def test_cursor_config_is_a_bare_url(self):
