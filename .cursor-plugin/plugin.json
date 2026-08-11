@@ -1,0 +1,24 @@
+{
+  "name": "waydock",
+  "description": "Read and act on your mail, meetings, calendar, and tasks from one governed, audited context. Scoped OAuth, no API key to paste.",
+  "version": "1.0.0",
+  "mcpServers": "../mcp.json",
+  "skills": "./skills/",
+  "author": {
+    "name": "Waydock"
+  },
+  "homepage": "https://waydock.ai",
+  "repository": "https://github.com/waydock/plugins",
+  "license": "MIT",
+  "keywords": [
+    "waydock",
+    "mcp",
+    "email",
+    "calendar",
+    "meetings",
+    "tasks",
+    "oauth",
+    "productivity"
+  ],
+  "logo": "logo.svg"
+}

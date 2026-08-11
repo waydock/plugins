@@ -1,0 +1,14 @@
+{
+  "name": "waydock",
+  "owner": {
+    "name": "Waydock",
+    "url": "https://waydock.ai"
+  },
+  "plugins": [
+    {
+      "name": "waydock",
+      "source": "./",
+      "description": "Read and act on your mail, meetings, calendar, and tasks from one governed, audited context. Scoped OAuth, no API key to paste."
+    }
+  ]
+}
