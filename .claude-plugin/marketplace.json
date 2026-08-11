@@ -1,5 +1,6 @@
 {
   "name": "waydock",
+  "description": "Waydock plugins for Claude Code. Skills plus the Waydock MCP server, connected over OAuth.",
   "owner": {
     "name": "Waydock",
     "url": "https://waydock.ai"
