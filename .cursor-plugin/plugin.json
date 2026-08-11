@@ -1,7 +1,7 @@
 {
   "name": "waydock",
   "description": "Read and act on your mail, meetings, calendar, and tasks from one governed, audited context. Scoped OAuth, no API key to paste.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "mcpServers": "mcp.json",
   "skills": "skills",
   "author": {

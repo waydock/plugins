@@ -1,6 +1,6 @@
 ---
 name: waydock-mcp
-description: Use the Waydock MCP server to read and act on the user's mail, meetings, calendar, tasks, and follow-ups from one governed context. Trigger when the user asks about their inbox, what needs their attention, a meeting, a follow-up, or wants a reply drafted.
+description: Read or act on the user's own email, meetings, calendar, tasks, and follow-ups through Waydock. Use whenever the user asks about their own mail or a thread ("did anyone reply about the invoice", "what did they say about the contract"), their schedule ("what meetings do I have tomorrow", "am I free Thursday"), what came out of a meeting, what someone owes them, or wants a reply drafted. Also use before calling any waydock_ tool, because it covers scopes, the difference between archived and live mail, and which operations write.
 ---
 
 # Waydock MCP
