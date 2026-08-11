@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "waydock": {
+      "url": "https://waydock.ai/api/mcp/stream"
+    }
+  }
+}

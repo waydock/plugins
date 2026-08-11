@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Catch drift caused by monorepo releases, not by commits here.
+    - cron: "0 21 * * 1"
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytest pyyaml
+      - run: python3 -m pytest tests/unit -q
+
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytest pyyaml
+      - name: Check skills against the live tool manifest
+        run: python3 -m pytest tests/live -q
+
+  version:
+    # Claude Code caches marketplace plugins by version. Ship a skill correction
+    # without bumping and no existing install ever sees it: the repo is right,
+    # every user is still on the old copy, and nothing anywhere reports a
+    # problem. Prose in a CONTRIBUTING file does not survive this; a required
+    # check does. Same reasoning as PR A, where one number restated in nine
+    # places was wrong in all nine.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: A skill or manifest change requires a version bump
+        run: |
+          BASE="origin/${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only "$BASE"...HEAD)
+          echo "$CHANGED"
+          NEEDS_BUMP=$(echo "$CHANGED" | grep -E '^(skills/|\.cursor-plugin/|\.claude-plugin/|mcp\.json|\.mcp\.json)' || true)
+          if [ -z "$NEEDS_BUMP" ]; then
+            echo "No shipped-artifact changes; version bump not required."
+            exit 0
+          fi
+          # The manifest may not exist on the base branch yet. On the PR that
+          # introduces it there is no previous version to compare against, and
+          # without this guard `git show` exits non-zero under bash -e and the
+          # job fails with "path does not exist" instead of the message below.
+          # A bump cannot be required for a file that is appearing for the
+          # first time.
+          if ! git cat-file -e "$BASE:.claude-plugin/plugin.json" 2>/dev/null; then
+            echo "No .claude-plugin/plugin.json on $BASE yet; this PR introduces it. Nothing to compare."
+            exit 0
+          fi
+          OLD=$(git show "$BASE:.claude-plugin/plugin.json" | python3 -c 'import json,sys;print(json.load(sys.stdin)["version"])')
+          NEW=$(python3 -c 'import json;print(json.load(open(".claude-plugin/plugin.json"))["version"])')
+          if [ "$OLD" = "$NEW" ]; then
+            echo "::error::Shipped artifacts changed but version is still $OLD."
+            echo "Bump version in BOTH .claude-plugin/plugin.json and .cursor-plugin/plugin.json,"
+            echo "or installed copies will never receive this change."
+            exit 1
+          fi
+          echo "Version $OLD -> $NEW. Good."
