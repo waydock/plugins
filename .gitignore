@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+
+# Conductor workspace scratch. Ignored locally via .git/info/exclude, which is
+# per-clone and not shared; a collaborator without it would commit these.
+.context/
