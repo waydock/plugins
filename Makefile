@@ -1,4 +1,6 @@
-.PHONY: help venv test test-unit test-live
+.PHONY: help venv test test-unit test-live probe
+
+TRIALS ?= 3
 
 VENV := .venv
 PY   := $(VENV)/bin/python
@@ -19,3 +21,6 @@ test-unit: $(PY) ## Static validation of the plugin (manifests, frontmatter, str
 
 test-live: $(PY) ## Check skills against the live tool manifest (needs network)
 	$(PY) -m pytest tests/live -q
+
+probe: ## Measure which skill each prompt actually loads (slow, needs claude CLI)
+	python3 tools/probe_skill_loading.py --trials $(TRIALS)

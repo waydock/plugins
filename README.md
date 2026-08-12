@@ -118,7 +118,15 @@ Run the test suite:
 ```bash
 make test        # offline: manifests, MCP configs, skill structure
 make test-live   # checks the skills against the live tool manifest
+make probe       # measures which skill each prompt actually loads
 ```
+
+`make probe` answers "does this description change work" by running the real
+harness N times per prompt and reading the `Skill` events, instead of reasoning
+from a single transcript. It is slow, costs tokens, needs the `claude` CLI, and
+is probabilistic, so it is deliberately not part of `make test` and not a CI
+gate. Run it after any edit to a skill's `description`, and read `FLAKY` as the
+honest answer it is rather than as a failure.
 
 Load this checkout into Cursor without publishing:
 
@@ -144,6 +152,12 @@ copies update on version, not on commit. Ship a skill correction without bumping
 the repo is right while every existing install stays on the old copy, and nothing
 anywhere reports a problem. CI enforces this on pull requests so it cannot be
 forgotten.
+
+**A skill's `description` decides whether it loads at all, so changing one is a
+behaviour change and needs `make probe`, not a reading.** Whether a skill fires
+is a model decision. A single run cannot tell "never" from "four times in five",
+and a description fix has already been shipped here, measured once, and wrongly
+written off as ineffective on that single sample.
 
 Skills describe workflows and point at
 https://waydock.ai/api/mcp/manifest for the full catalog. They deliberately do not
