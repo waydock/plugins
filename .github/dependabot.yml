@@ -1,0 +1,20 @@
+version: 2
+
+# Actions are pinned to commit SHAs in .github/workflows, not to tags. A tag is
+# a mutable pointer: `actions/checkout@v4` is whatever the owner of that tag
+# says it is on the morning the job runs, and this repo publishes straight from
+# `main` to every marketplace install. A SHA cannot be moved under us.
+#
+# The cost of pinning is that a SHA never updates on its own, so it needs
+# something that opens the bump. That is the only reason this file exists;
+# there are no application dependencies here. pytest and pyyaml are installed
+# ad hoc in CI and deliberately not tracked: they never reach a user.
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies
