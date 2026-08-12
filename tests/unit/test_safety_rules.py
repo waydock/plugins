@@ -1,21 +1,35 @@
-"""The safety rules have to live in the skill that actually loads.
+"""Every skill that can write carries its own safety rules.
 
-Measured against the real harness in PR #4, reading Skill tool_use events rather
-than self-report: `waydock-mcp` fires when Waydock is named, or when the question
-is about how to use it, and does not fire when someone asks an ordinary question
-about their own mail while the tools are already visible. Calling a tool the
-model can see beats reading guidance about how to call it.
+`waydock-morning-triage` reads the user's mail and offers replies, and step 4
+saves a real draft into their mailbox once approved. A skill that writes should
+state the rules governing that write, rather than depend on a second skill
+having been loaded first. Skill selection is a model decision, so "the other one
+will be loaded too" is an assumption, not a guarantee, whatever its hit rate.
 
-The four traps lived only in `waydock-mcp`, which put them out of reach during
-exactly the ordinary use where they earn their keep. They now also live in
-`waydock-morning-triage`, which does fire. Rewording the description was tried
-first and changed neither failing prompt, so placement is the fix, not wording.
+That is the reason. It is worth recording that it is NOT the reason this file was
+originally added, because the first version of this docstring asserted something
+measurably false and someone re-reading #4 will otherwise reach the same wrong
+conclusion:
 
-This test stops them drifting back out of the skill that loads.
+  PR #4 reported that "did anyone ever reply about the invoice" and "what
+  meetings do I have tomorrow" loaded no skill at all, concluded that
+  `waydock-mcp` does not fire on ordinary questions, and recommended moving the
+  safety content out of it. PR #5 did the move and repeated the claim here.
+
+  Both prompts load `waydock-mcp` 12 times out of 12, measured three times each
+  against current main and three times each against #4's own tree. The
+  description rewrite in #4 worked; #4's follow-up measurement, one run per
+  prompt, did not survive a second sample.
+
+So the rules are duplicated on purpose, not because `waydock-mcp` fails to load.
+Re-measure with `make probe` (tools/probe_skill_loading.py) rather than reasoning
+from either PR's table.
+
+This test stops the rules drifting back out of the skill that performs the write.
 """
 from tests.skill import discover_skills
 
-LOADS_RELIABLY = "waydock-morning-triage"
+WRITES_TO_THE_MAILBOX = "waydock-morning-triage"
 
 # Marker to look for, and what its absence would mean in practice.
 REQUIRED_RULES = {
@@ -42,16 +56,16 @@ REQUIRED_RULES = {
 }
 
 
-class TestSafetyRulesReachOrdinaryUse:
-    def test_the_skill_that_loads_carries_every_safety_rule(self):
+class TestSafetyRulesLiveWithTheWrite:
+    def test_the_skill_that_writes_carries_every_safety_rule(self):
         skill = next(
-            s for s in discover_skills() if s.path.parent.name == LOADS_RELIABLY
+            s for s in discover_skills() if s.path.parent.name == WRITES_TO_THE_MAILBOX
         )
         for rule, (marker, consequence) in REQUIRED_RULES.items():
             assert marker in skill.content, (
-                f"{LOADS_RELIABLY} no longer states '{rule}' (looked for "
-                f"'{marker}'). It is the skill that fires on ordinary questions, "
-                f"so without it {consequence}. Keeping the rule only in "
-                f"waydock-mcp does not count: that skill does not load unless "
-                f"the user names Waydock."
+                f"{WRITES_TO_THE_MAILBOX} no longer states '{rule}' (looked for "
+                f"'{marker}'). This skill saves drafts, so without it "
+                f"{consequence}. Keeping the rule only in waydock-mcp is not "
+                f"enough: whether that skill is also loaded is a model decision, "
+                f"not something this one can rely on."
             )
