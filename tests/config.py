@@ -22,7 +22,15 @@ def plugin_name() -> str:
     return json.loads(CURSOR_MANIFEST.read_text())["name"]
 
 
-EXPECTED_SKILLS = ("waydock-mcp", "waydock-morning-triage")
+EXPECTED_SKILLS = (
+    "waydock-mcp",
+    "waydock-morning-triage",
+    "waydock-batch-drafts",
+    "waydock-eod-wrapup",
+    "waydock-relationship-recap",
+    "waydock-find-time",
+    "waydock-welcome",
+)
 WAYDOCK_MCP_URL = "https://waydock.ai/api/mcp/stream"
 MANIFEST_URL = "https://waydock.ai/api/mcp/manifest"
 

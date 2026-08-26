@@ -6,7 +6,7 @@ Waydock unifies a person's mail, calendar, meetings, tasks, and follow-ups into
 one context and exposes it to coding agents over MCP. Access is per-scope, every
 call is audited, and the same tool registry backs Waydock's own in-app assistant,
 so an agent and the product see exactly the same surface under exactly the same
-rules. This repo is the plugin: two skills that teach an agent how to use that
+rules. This repo is the plugin: seven skills that teach an agent how to use that
 surface well, plus the MCP server configuration for Cursor and Claude Code.
 
 Connection is OAuth. There is no API key to paste.
@@ -21,7 +21,12 @@ Connection is OAuth. There is no API key to paste.
 | `.claude-plugin/plugin.json` | Claude Code | Plugin manifest |
 | `.claude-plugin/marketplace.json` | Claude Code | Marketplace entry |
 | `skills/waydock-mcp` | both | Orientation: how to use Waydock without getting it wrong |
+| `skills/waydock-welcome` | both | Onboarding: connect, first calls, what to try |
 | `skills/waydock-morning-triage` | both | Workflow: rank what needs the user, offer replies, never send |
+| `skills/waydock-batch-drafts` | both | Workflow: draft many replies at once, save only what is approved |
+| `skills/waydock-eod-wrapup` | both | Workflow: end-of-day open loops, offer the closers |
+| `skills/waydock-relationship-recap` | both | Workflow: one person or company's full history, both directions |
+| `skills/waydock-find-time` | both | Workflow: availability from the calendar, propose times, draft the reply |
 
 ## One directory, two harnesses
 
@@ -39,8 +44,13 @@ Connection is OAuth. There is no API key to paste.
         +------------------------+------------------------+
                                  |
                             skills/          <-- shared verbatim, byte for byte
-                              waydock-mcp/SKILL.md
-                              waydock-morning-triage/SKILL.md
+                              waydock-mcp/
+                              waydock-welcome/
+                              waydock-morning-triage/
+                              waydock-batch-drafts/
+                              waydock-eod-wrapup/
+                              waydock-relationship-recap/
+                              waydock-find-time/
 
   Each harness ignores the other's files. Nothing is copied, so nothing can drift.
   Adding a third harness means adding files, never reconciling them.
@@ -93,9 +103,10 @@ in the browser. Nothing is pasted anywhere.
 Cursor and Claude Code request the entire scope catalog at install, so the consent
 screen lists all of it. Scopes that let the agent reach other people, such as
 sending mail, stay named line items rather than being folded into a summary, and
-they arrive unticked. Read the screen and grant what you actually want. The two
-skills here are conservative by design (triage never sends), but a skill's restraint
-is not the same thing as a limited grant.
+they arrive unticked. Read the screen and grant what you actually want. The
+skills here are conservative by design (nothing sends without an explicit ask,
+and most workflows never send at all), but a skill's restraint is not the same
+thing as a limited grant.
 
 A `wdmcp_` API key is still supported as a fallback for scripts and non-interactive
 use. See https://waydock.ai/docs/authentication.
@@ -104,12 +115,15 @@ use. See https://waydock.ai/docs/authentication.
 
 ```
 what needs my attention today
+draft replies to everything waiting on me
+wrap up my day
+where are things with acme
+find me thirty minutes with sarah next week
 did anyone ever reply about the invoice
-what came out of my meeting with the design team
 ```
 
-The first loads the triage workflow. The others use the orientation skill to reach
-mail and meetings.
+The first five each load a workflow skill. The last uses the orientation skill
+to reach mail directly.
 
 ## Development
 
