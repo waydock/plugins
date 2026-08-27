@@ -9,7 +9,7 @@ Code plugins ship, byte for byte.
 From an eve project:
 
 ```bash
-eve registry add @waydock=https://raw.githubusercontent.com/waydock/plugins/main/eve/r/{name}.json
+eve registry add @waydock=https://waydock.ai/r/{name}.json
 eve add @waydock/waydock
 ```
 
@@ -71,8 +71,10 @@ direct provider SDKs.
 
 ## Development
 
-The registry under `r/` is built output, committed because
-raw.githubusercontent.com serves files, not build steps. After editing
+The registry under `r/` is built output, committed because it is served as
+static files: `waydock.ai/r/{name}.json` is a thin proxy in front of this
+directory on raw.githubusercontent.com, so the repo remains the source of
+truth and the raw URL keeps working as a fallback. After editing
 `registry.json`, `registry/waydock.ts`, or either skill:
 
 ```bash
