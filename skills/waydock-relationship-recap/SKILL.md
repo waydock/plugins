@@ -1,6 +1,6 @@
 ---
 name: waydock-relationship-recap
-description: Build the full picture of one relationship from Waydock. Every thread, meeting, commitment, and open item with a specific person or company, in both directions, assembled into one recap. Use when the user asks what is happening with someone, when they last talked, the status of a deal, everything about a company, who they have not followed up with, a CRM-style view of a contact, or a briefing before a call. Trigger on any ask for the consolidated history of one person or one company.
+description: Build the full picture of one relationship from Waydock. Every thread, meeting, commitment, and open item with a specific person or company, in both directions, assembled into one recap. Use when the user asks what is happening with someone, when they last talked, the status of a deal, everything about a company, a CRM-style view of a contact, or a briefing before a call. Trigger on any ask for the consolidated history of one person or one company, never for lists of people; who is awaiting a follow-up is a follow-ups question, not a recap.
 ---
 
 # Relationship recap
@@ -42,11 +42,14 @@ blends two Sarahs is worse than no recap.
 
 ## Step 2: Gather from every surface
 
-Coverage beats cleverness here. Run the independent reads together.
+Coverage beats cleverness here. Start with `waydock_capabilities` to learn
+which surfaces this connection was actually granted: search quietly narrows to
+granted scopes, so without the capability map a missing scope reads as a quiet
+relationship. Then run the independent reads together.
 
 - `waydock_search` for one query across mail, meetings, tasks, and cards. The
-  broadest single call, and the fastest way to learn which surfaces have
-  anything at all.
+  broadest single call, and the fastest way to learn which of the granted
+  surfaces have anything at all.
 - `waydock_mail_list` for the archived history, which reports the window it
   covers, then `waydock_mail_search` live when the relationship is older than
   that window. Live search needs its own scope and its own addressing, per the
@@ -57,6 +60,10 @@ Coverage beats cleverness here. Run the independent reads together.
   a meeting looks decisive.
 - `waydock_follow_ups_list` for which direction the waiting currently runs.
 - `waydock_action_items_search` for commitments that carry their name.
+
+A surface the connection lacks is a hole in the recap, not an empty history.
+Name it in the recap ("meetings were not granted, so this is mail only")
+rather than presenting partial coverage as the whole story.
 
 ## Step 3: Assemble the recap
 

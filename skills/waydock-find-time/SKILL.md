@@ -1,6 +1,6 @@
 ---
 name: waydock-find-time
-description: Find meeting time and propose it through Waydock. Use when the user asks when they are free, wants to schedule or reschedule with someone, wants times proposed or their availability drafted, needs a slot checked against their calendar, or when an email thread is circling a meeting and the user wants to land it. Reads the calendar, proposes concrete slots, and drafts the reply on approval. Waydock does not create calendar invites; the user sends the invite from their calendar.
+description: Find meeting time with someone and propose it through Waydock. Use when the user wants to schedule or reschedule with a counterpart, wants concrete times proposed or their availability drafted into a reply, or when an email thread is circling a meeting and the user wants to land it. Reads the calendar, proposes concrete slots, and drafts the reply on approval. Not for plain availability questions with no one to write to, like am I free Thursday; that is an ordinary calendar read. Waydock does not create calendar invites; the user sends the invite from their calendar.
 ---
 
 # Find a time
@@ -47,7 +47,14 @@ cannot be trusted without.
 
 From the thread, read with `waydock_mail_get` when the scheduling is happening
 by email, or from the ask itself: who, how long, what window, and in which
-timezone. Timezones are where scheduling drafts go quietly wrong. Decide which
+timezone.
+
+Who is the gate. This workflow exists to put times in front of a counterpart.
+When there is no one to write to, because the user just wants to know whether
+they are free, read the calendar, answer the question, and stop. A proposal
+draft nobody asked for is noise.
+
+Timezones are where scheduling drafts go quietly wrong. Decide which
 zone the proposal speaks in, and name it in the text ("all times AEST") rather
 than leaving both sides to assume their own.
 

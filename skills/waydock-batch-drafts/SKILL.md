@@ -45,6 +45,10 @@ Where the batch comes from depends on what the user asked for:
   `waydock_action_items_list` for what each meeting produced.
 - A list the user pasted: take it verbatim and resolve each item to a thread.
 
+Resolve each item to the thread it continues while collecting. Some items have
+none: a meeting follow-up that starts fresh, or a copy to someone the user has
+never mailed. That changes how they save (Step 4), so mark them now.
+
 Drop automated senders without being asked. A notification does not need a
 reply, and padding the batch with them buries the messages that do.
 
@@ -79,6 +83,12 @@ copies is how one recipient gets a promise the others did not.
 approved draft and report each one saved, so the user can find them in their
 drafts folder. Approval covers the drafts they named in this pass, never the
 next pass.
+
+`waydock_draft_reply_save` saves replies into an existing thread; a draft with
+no thread cannot land in the mailbox. For those, leave the finished text in
+the conversation for the user to send from their own mail client, and say
+which drafts that applies to, so nothing they approved quietly goes nowhere.
+Never reach for `waydock_send_email` as the workaround.
 
 If a save is refused, report which draft and why, using the refusal rules
 above, and keep going with the rest. One blocked save does not cancel a batch.
