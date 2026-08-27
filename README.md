@@ -97,7 +97,7 @@ directly:
 From an eve project:
 
 ```bash
-eve registry add @waydock=https://raw.githubusercontent.com/waydock/plugins/main/eve/r/{name}.json
+eve registry add @waydock=https://waydock.ai/r/{name}.json
 eve add @waydock/waydock
 ```
 
