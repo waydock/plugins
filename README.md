@@ -7,9 +7,13 @@ one context and exposes it to coding agents over MCP. Access is per-scope, every
 call is audited, and the same tool registry backs Waydock's own in-app assistant,
 so an agent and the product see exactly the same surface under exactly the same
 rules. This repo is the plugin: two skills that teach an agent how to use that
-surface well, plus the MCP server configuration for Cursor and Claude Code.
+surface well, plus the MCP server configuration for Cursor, Claude Code, and
+[eve](https://eve.dev).
 
-Connection is OAuth. There is no API key to paste.
+Connection is OAuth for Cursor and Claude Code; there is no API key to paste.
+eve connects with a `wdmcp_` key, because eve connections supply their own
+bearer token rather than running MCP's OAuth discovery. See
+[eve/README.md](eve/README.md).
 
 ## What is included
 
@@ -20,30 +24,36 @@ Connection is OAuth. There is no API key to paste.
 | `.cursor-plugin/plugin.json` | Cursor | Plugin manifest |
 | `.claude-plugin/plugin.json` | Claude Code | Plugin manifest |
 | `.claude-plugin/marketplace.json` | Claude Code | Marketplace entry |
-| `skills/waydock-mcp` | both | Orientation: how to use Waydock without getting it wrong |
-| `skills/waydock-morning-triage` | both | Workflow: rank what needs the user, offer replies, never send |
+| `eve/r/` | eve CLI | Registry (built, committed); catalog plus one document per item |
+| `eve/registry/waydock.ts` | eve CLI | The MCP connection: url, key auth, write-gating approval policy |
+| `skills/waydock-mcp` | all three | Orientation: how to use Waydock without getting it wrong |
+| `skills/waydock-morning-triage` | all three | Workflow: rank what needs the user, offer replies, never send |
 
-## One directory, two harnesses
+## One directory, three harnesses
 
 ```
                       waydock/plugins  (one directory, no symlinks, no sync)
                                  |
         +------------------------+------------------------+
-        |                                                 |
-     CURSOR reads                                    CLAUDE CODE reads
-        |                                                 |
-  .cursor-plugin/plugin.json                    .claude-plugin/plugin.json
-  mcp.json          (bare url)                  .claude-plugin/marketplace.json
-        |                                       .mcp.json   (needs "type": "http")
-        |                                                 |
+        |                        |                        |
+     CURSOR reads          CLAUDE CODE reads           EVE reads
+        |                        |                        |
+  .cursor-plugin/          .claude-plugin/          eve/r/*.json (registry)
+    plugin.json              plugin.json            eve/registry/waydock.ts
+  mcp.json (bare url)        marketplace.json         (connection + approval)
+        |                  .mcp.json ("type": "http")     |
+        |                        |                        |
         +------------------------+------------------------+
                                  |
                             skills/          <-- shared verbatim, byte for byte
                               waydock-mcp/SKILL.md
                               waydock-morning-triage/SKILL.md
 
-  Each harness ignores the other's files. Nothing is copied, so nothing can drift.
-  Adding a third harness means adding files, never reconciling them.
+  Each harness ignores the others' files. Nothing is copied, so nothing can
+  drift. The paragraph that used to end here said "adding a third harness means
+  adding files, never reconciling them"; eve was that harness, and it did.
+  (The eve registry inlines the skills into its built JSON; a unit test holds
+  those bytes identical to skills/, so the sharing survives the build step.)
 ```
 
 ## Install into Claude Code
@@ -81,6 +91,21 @@ directly:
   }
 }
 ```
+
+## Install into eve
+
+From an eve project:
+
+```bash
+eve registry add @waydock=https://raw.githubusercontent.com/waydock/plugins/main/eve/r/{name}.json
+eve add @waydock/waydock
+```
+
+Set `WAYDOCK_MCP_KEY` to a `wdmcp_` key and choose a model whose data handling
+you accept. The connection gates every non-read tool behind eve's
+human-in-the-loop approval by default. [eve/README.md](eve/README.md) covers
+the approval model, why eve uses a key where the other harnesses use OAuth,
+and how to regenerate the registry.
 
 ## Authentication
 

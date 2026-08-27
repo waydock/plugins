@@ -1,4 +1,4 @@
-.PHONY: help venv test test-unit test-live probe
+.PHONY: help venv test test-unit test-live probe build-eve
 
 TRIALS ?= 3
 
@@ -24,3 +24,6 @@ test-live: $(PY) ## Check skills against the live tool manifest (needs network)
 
 probe: ## Measure which skill each prompt actually loads (slow, needs claude CLI)
 	python3 tools/probe_skill_loading.py --trials $(TRIALS)
+
+build-eve: ## Rebuild the committed eve registry under eve/r/ from its sources
+	python3 tools/build_eve_registry.py
