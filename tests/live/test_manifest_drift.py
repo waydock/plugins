@@ -101,3 +101,22 @@ def test_the_endpoint_we_ship_is_the_one_advertised(manifest):
     # If the transport path ever moves, both mcp.json files are wrong and every
     # install breaks. Catch it here rather than from a user report.
     assert manifest["transports"]["streamableHttp"]["url"] == "/api/mcp/stream"
+
+
+def test_every_tool_carries_the_read_only_flag(manifest):
+    # The eve connection's approval policy gates on this flag instead of a tool
+    # list: readOnly true runs, anything else asks a human. A tool published
+    # without the flag would silently start prompting on every call (annoying
+    # but safe); a manifest that dropped the field entirely would gate ALL
+    # calls, reads included, and the connection would look broken. Either way
+    # the defect is in the monorepo and this is where we hear about it.
+    missing = sorted(t["name"] for t in manifest["tools"] if not isinstance(t.get("readOnly"), bool))
+    assert not missing, f"tools without a boolean readOnly flag: {missing}"
+
+
+def test_read_only_still_distinguishes_tools(manifest):
+    # Gating on readOnly is only meaningful while the catalog contains both
+    # kinds. All-true would mean writes stopped being flagged; all-false would
+    # gate every read behind an approval prompt.
+    values = {t["readOnly"] for t in manifest["tools"]}
+    assert values == {True, False}, f"readOnly no longer distinguishes tools: {values}"

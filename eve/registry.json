@@ -1,0 +1,58 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "waydock",
+  "homepage": "https://github.com/waydock/plugins",
+  "items": [
+    {
+      "name": "waydock",
+      "type": "registry:item",
+      "title": "Waydock",
+      "description": "Connect an eve agent to the user's mail, calendar, meetings, tasks, and follow-ups through the Waydock MCP server. Writes are gated behind human approval by default. Includes the same seven skills the Cursor and Claude Code plugins ship.",
+      "envVars": {
+        "WAYDOCK_MCP_KEY": ""
+      },
+      "files": [
+        {
+          "path": "registry/waydock.ts",
+          "type": "registry:file",
+          "target": "agent/connections/waydock.ts"
+        },
+        {
+          "path": "../skills/waydock-mcp/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-mcp/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-morning-triage/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-morning-triage/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-welcome/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-welcome/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-batch-drafts/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-batch-drafts/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-eod-wrapup/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-eod-wrapup/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-relationship-recap/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-relationship-recap/SKILL.md"
+        },
+        {
+          "path": "../skills/waydock-find-time/SKILL.md",
+          "type": "registry:file",
+          "target": "agent/skills/waydock-find-time/SKILL.md"
+        }
+      ]
+    }
+  ]
+}
