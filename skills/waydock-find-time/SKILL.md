@@ -51,8 +51,9 @@ timezone.
 
 Who is the gate. This workflow exists to put times in front of a counterpart.
 When there is no one to write to, because the user just wants to know whether
-they are free, read the calendar, answer the question, and stop. A proposal
-draft nobody asked for is noise.
+they are free, still go through Step 2's capability check and calendar read,
+since an unconnected calendar and a clear one look identical. Then answer the
+question and stop. A proposal draft nobody asked for is noise.
 
 Timezones are where scheduling drafts go quietly wrong. Decide which
 zone the proposal speaks in, and name it in the text ("all times AEST") rather
