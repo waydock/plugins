@@ -1,7 +1,7 @@
 # Waydock for eve
 
 Files for the [eve](https://eve.dev) agent framework: an MCP connection with a
-write-gating approval policy, plus the same two skills the Cursor and Claude
+write-gating approval policy, plus the same seven skills the Cursor and Claude
 Code plugins ship, byte for byte.
 
 ## Install
@@ -13,13 +13,18 @@ eve registry add @waydock=https://waydock.ai/r/{name}.json
 eve add @waydock/waydock
 ```
 
-This writes three files into your project:
+This writes eight files into your project:
 
 | File | Purpose |
 |---|---|
 | `agent/connections/waydock.ts` | The MCP connection: url, auth, approval policy |
 | `agent/skills/waydock-mcp/SKILL.md` | Orientation: how to use Waydock without getting it wrong |
 | `agent/skills/waydock-morning-triage/SKILL.md` | Workflow: rank what needs the user, offer replies, never send |
+| `agent/skills/waydock-welcome/SKILL.md` | Onboarding: connect, first calls, what to try |
+| `agent/skills/waydock-batch-drafts/SKILL.md` | Workflow: draft many replies at once, save only what is approved |
+| `agent/skills/waydock-eod-wrapup/SKILL.md` | Workflow: end-of-day open loops, offer the closers |
+| `agent/skills/waydock-relationship-recap/SKILL.md` | Workflow: one person or company's full history, both directions |
+| `agent/skills/waydock-find-time/SKILL.md` | Workflow: availability from the calendar, propose times, draft the reply |
 
 Then set the key:
 
@@ -75,7 +80,7 @@ The registry under `r/` is built output, committed because it is served as
 static files: `waydock.ai/r/{name}.json` is a thin proxy in front of this
 directory on raw.githubusercontent.com, so the repo remains the source of
 truth and the raw URL keeps working as a fallback. After editing
-`registry.json`, `registry/waydock.ts`, or either skill:
+`registry.json`, `registry/waydock.ts`, or any skill:
 
 ```bash
 make build-eve

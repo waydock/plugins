@@ -1,12 +1,19 @@
 """Every skill that can write carries its own safety rules.
 
-`waydock-morning-triage` reads the user's mail and offers replies, and step 4
-saves a real draft into their mailbox once approved. A skill that writes should
-state the rules governing that write, rather than depend on a second skill
-having been loaded first. Skill selection is a model decision, so "the other one
-will be loaded too" is an assumption, not a guarantee, whatever its hit rate.
+A skill that writes should state the rules governing that write, rather than
+depend on a second skill having been loaded first. Skill selection is a model
+decision, so "the other one will be loaded too" is an assumption, not a
+guarantee, whatever its hit rate.
 
-That is the reason. It is worth recording that it is NOT the reason this file was
+Which skills count as writers is DERIVED, not listed. When this file pinned one
+skill by name, adding a second writing skill would have shipped with no
+enforcement at all and nothing would have gone red: the exact failure mode this
+suite exists to catch, a guard that silently stops guarding. Any skill that
+names a mailbox-writing tool anywhere in its content is in the set. A guard
+test asserts the derivation still catches the two known writers, so a rename
+in tests/skill.py cannot quietly empty it.
+
+That is the reason. It is worth recording what is NOT the reason this file was
 originally added, because the first version of this docstring asserted something
 measurably false and someone re-reading #4 will otherwise reach the same wrong
 conclusion:
@@ -25,11 +32,20 @@ So the rules are duplicated on purpose, not because `waydock-mcp` fails to load.
 Re-measure with `make probe` (tools/probe_skill_loading.py) rather than reasoning
 from either PR's table.
 
-This test stops the rules drifting back out of the skill that performs the write.
+This test stops the rules drifting back out of the skills that perform writes.
 """
-from tests.skill import discover_skills
+from tests.skill import discover_skills, named_tools
 
-WRITES_TO_THE_MAILBOX = "waydock-morning-triage"
+# Naming any of these puts a real draft in, or sends real mail from, the user's
+# mailbox. A skill that mentions one is instructing an agent about a write and
+# must carry the rules that govern it.
+MAILBOX_WRITING_TOOLS = {
+    "waydock_draft_reply_save",
+    "waydock_draft_reply_regenerate",
+    "waydock_follow_up_nudge",
+    "waydock_send_email",
+    "waydock_morning_brief_send",
+}
 
 # Marker to look for, and what its absence would mean in practice.
 REQUIRED_RULES = {
@@ -56,16 +72,33 @@ REQUIRED_RULES = {
 }
 
 
+def writing_skills():
+    return [
+        skill
+        for skill in discover_skills()
+        if named_tools(skill) & MAILBOX_WRITING_TOOLS
+    ]
+
+
 class TestSafetyRulesLiveWithTheWrite:
-    def test_the_skill_that_writes_carries_every_safety_rule(self):
-        skill = next(
-            s for s in discover_skills() if s.path.parent.name == WRITES_TO_THE_MAILBOX
-        )
-        for rule, (marker, consequence) in REQUIRED_RULES.items():
-            assert marker in skill.content, (
-                f"{WRITES_TO_THE_MAILBOX} no longer states '{rule}' (looked for "
-                f"'{marker}'). This skill saves drafts, so without it "
-                f"{consequence}. Keeping the rule only in waydock-mcp is not "
-                f"enough: whether that skill is also loaded is a model decision, "
-                f"not something this one can rely on."
-            )
+    def test_the_derivation_still_catches_the_known_writers(self):
+        # If a tool rename (or a TOOL_PATTERN change in tests/skill.py) stopped
+        # the derivation matching anything, the rules test below would pass
+        # vacuously over an empty set. These two skills write by design; the
+        # derivation finding neither means the derivation is broken, not that
+        # the repo has no writers.
+        names = {skill.path.parent.name for skill in writing_skills()}
+        assert "waydock-morning-triage" in names, names
+        assert "waydock-mcp" in names, names
+
+    def test_every_skill_that_writes_carries_every_safety_rule(self):
+        for skill in writing_skills():
+            name = skill.path.parent.name
+            for rule, (marker, consequence) in REQUIRED_RULES.items():
+                assert marker in skill.content, (
+                    f"{name} names a mailbox-writing tool but no longer states "
+                    f"'{rule}' (looked for '{marker}'). Without it "
+                    f"{consequence}. Keeping the rule only in waydock-mcp is "
+                    f"not enough: whether that skill is also loaded is a model "
+                    f"decision, not something this one can rely on."
+                )

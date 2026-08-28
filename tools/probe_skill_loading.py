@@ -86,6 +86,31 @@ CASES = (
         "waydock-mcp",
         "diagnostic: names the product, so it should always fire",
     ),
+    Case(
+        "draft replies to everything waiting on me",
+        "waydock-batch-drafts",
+        "the batch-drafting workflow's headline prompt",
+    ),
+    Case(
+        "wrap up my day",
+        "waydock-eod-wrapup",
+        "the end-of-day workflow's headline prompt",
+    ),
+    Case(
+        "where are things with acme corp",
+        "waydock-relationship-recap",
+        "the relationship-recap workflow's headline prompt",
+    ),
+    Case(
+        "find a time to meet with sarah next week",
+        "waydock-find-time",
+        "the scheduling workflow's headline prompt",
+    ),
+    Case(
+        "what can waydock do",
+        "waydock-welcome",
+        "the onboarding skill's headline prompt",
+    ),
 )
 
 
