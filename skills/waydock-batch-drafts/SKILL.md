@@ -36,6 +36,10 @@ trusted without, because a batch multiplies whatever mistake it contains.
 
 ## Step 1: Collect what needs a reply
 
+Before collecting, call `waydock_capabilities`: an unconnected mail provider
+and an empty inbox produce the same silence, and only the capability map tells
+them apart. Report a missing provider instead of reporting an empty batch.
+
 Where the batch comes from depends on what the user asked for:
 
 - Unread or waiting mail: `waydock_inbox` for pending cards, keeping the ones

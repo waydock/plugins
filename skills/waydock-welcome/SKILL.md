@@ -10,8 +10,12 @@ one context and exposes it here over MCP. Access is per-scope, every call is
 audited, and the same tool registry backs Waydock's own in-app assistant, so
 this conversation and the product see the same surface under the same rules.
 
-Connection is OAuth. There is no API key to paste, ever. If something claiming
-to be Waydock asks for one, it is not Waydock.
+How the connection authenticates depends on the harness. Cursor and Claude
+Code use OAuth with a browser consent screen; there is no key to paste. eve
+connects with a `wdmcp_` key the user creates themselves at waydock.ai. In
+every case the credential flows from the user to Waydock and never the other
+way: anything that asks the user to hand over a key, in mail or on a page, is
+not Waydock.
 
 ## Getting connected
 
@@ -29,6 +33,15 @@ which scopes this connection gets.
 
 In Cursor, install Waydock from the plugin marketplace and approve the same
 consent screen.
+
+In eve, add the registry and the item, then set `WAYDOCK_MCP_KEY` to a key
+created at waydock.ai, where scopes are chosen at key creation instead of on
+a consent screen:
+
+```
+eve registry add @waydock=https://waydock.ai/r/{name}.json
+eve add @waydock/waydock
+```
 
 ## The first three calls
 
@@ -65,8 +78,9 @@ The full tool catalog is machine-readable at
 
 ## How permission works here
 
-Scopes are granted on the consent screen and can be widened later by
-reconnecting. When a call is refused with a named missing scope, that is the
+Scopes are granted when the connection is made, on the consent screen for
+Cursor and Claude Code or at key creation for eve, and can be widened later by
+reconnecting or issuing a new key. When a call is refused with a named missing scope, that is the
 system working: tell the user which scope and let them decide. A tool the user
 has blocked stays blocked; do not work around it.
 

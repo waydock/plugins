@@ -42,10 +42,12 @@ blends two Sarahs is worse than no recap.
 
 ## Step 2: Gather from every surface
 
-Coverage beats cleverness here. Start with `waydock_capabilities` to learn
-which surfaces this connection was actually granted: search quietly narrows to
-granted scopes, so without the capability map a missing scope reads as a quiet
-relationship. Then run the independent reads together.
+Coverage beats cleverness here. Start with `waydock_capabilities` for which
+providers are connected and `waydock_key_info` for which scopes this
+connection holds; they answer different questions, and either can hollow out
+a recap. Search quietly narrows to granted scopes, so without that map a
+missing scope or provider reads as a quiet relationship. Then run the
+independent reads together.
 
 - `waydock_search` for one query across mail, meetings, tasks, and cards. The
   broadest single call, and the fastest way to learn which of the granted
