@@ -31,7 +31,7 @@ EXPECTED_SKILLS = (
     "waydock-find-time",
     "waydock-welcome",
 )
-WAYDOCK_MCP_URL = "https://waydock.ai/api/mcp/stream"
+WAYDOCK_MCP_URL = "https://mcp.waydock.ai/mcp"
 MANIFEST_URL = "https://waydock.ai/api/mcp/manifest"
 
 # Skills describe workflows, they do not enumerate the catalog. The live tool
