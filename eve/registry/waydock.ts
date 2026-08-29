@@ -34,7 +34,7 @@ function readOnlyFlags(): Promise<ReadonlyMap<string, boolean>> {
 }
 
 export default defineMcpClientConnection({
-  url: "https://waydock.ai/api/mcp/stream",
+  url: "https://mcp.waydock.ai/mcp",
   description:
     "The user's own work context in one place: mail across Gmail and Outlook, " +
     "calendar, meetings and transcripts, tasks, follow-ups, the morning " +

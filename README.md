@@ -96,7 +96,7 @@ directly:
 {
   "mcpServers": {
     "waydock": {
-      "url": "https://waydock.ai/api/mcp/stream"
+      "url": "https://mcp.waydock.ai/mcp"
     }
   }
 }
